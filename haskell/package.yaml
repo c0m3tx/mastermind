@@ -1,0 +1,18 @@
+name: mastermind
+
+dependencies:
+  - base
+  - random
+
+library:
+  exposed-modules: Mastermind
+  source-dirs: src
+  dependencies:
+    - random
+
+executables:
+  mastermind: 
+    source-dirs: app
+    main: Main.hs
+    dependencies:
+      - mastermind
