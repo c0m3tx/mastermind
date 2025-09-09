@@ -10,3 +10,9 @@ library:
   dependencies:
     - random
 
+executables:
+  mastermind: 
+    source-dirs: app
+    main: Main.hs
+    dependencies:
+      - mastermind
