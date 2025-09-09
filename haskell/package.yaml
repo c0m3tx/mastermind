@@ -1,0 +1,12 @@
+name: mastermind
+
+dependencies:
+  - base
+  - random
+
+library:
+  exposed-modules: Mastermind
+  source-dirs: src
+  dependencies:
+    - random
+
