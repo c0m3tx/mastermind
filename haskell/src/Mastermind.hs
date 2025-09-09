@@ -1,6 +1,8 @@
-module Mastermind where
+module Mastermind (playLoop, generateCode) where
 
+import Data.Bool (bool)
 import Data.Char (digitToInt, isDigit)
+import Data.List (intersect, nub)
 import System.Random (newStdGen, uniformShuffleList)
 
 generateCode :: IO [Int]
@@ -9,32 +11,38 @@ generateCode = do
   return $ take 4 $ fst $ uniformShuffleList [0 .. 9] $ gen
 
 playLoop :: [Int] -> Int -> IO ()
-playLoop _ 0 = putStrLn "Game Over! You did not guess the code."
+playLoop secretCode 0 = putStrLn $ "Game Over! You did not guess the code (was " ++ show secretCode ++ ")."
 playLoop secretCode attempts = do
-  putStrLn $ "You have " ++ show attempts ++ " attempts left. Enter your guess (4 digits):"
-  input <- getLine
-  let guess = map digitToInt (filter isDigit $ input)
-  handleGuess secretCode guess attempts
+  putStrLn $ "You have " ++ show attempts ++ " attempts left."
+  prompt >>= guess attempts secretCode
 
-handleGuess :: [Int] -> [Int] -> Int -> IO ()
-handleGuess secret guess attempts
-  | length guess /= 4 = do
-      putStrLn "Invalid input. Please enter exactly 4 digits."
-      playLoop secret attempts
-  | xs == 4 = do
-      putStrLn $ "Well done! You discovered the secret!"
-  | otherwise = do
-      putStrLn $ "Result: " ++ show xs ++ " x(s) and " ++ show os ++ " o(s)."
-      playLoop secret (attempts - 1)
-  where
-    xs = xes secret guess
-    os = oes secret guess
+prompt :: IO [Int]
+prompt = do
+  putStrLn "Enter your 4 digits guess: "
+  guess <- nub . map digitToInt . filter isDigit <$> getLine
+  if length guess /= 4
+    then
+      putStrLn "Invalid input (4 digits, must be unique)" >> prompt
+    else
+      return guess
+
+guess :: Int -> [Int] -> [Int] -> IO ()
+guess _ secret guess | secret == guess = do
+  putStrLn "Result: XXXX"
+  putStrLn "Well done! You won!"
+guess attempts secret guess =
+  let xs = xes secret guess
+      os = oes secret guess
+   in do
+        putStrLn $ "Result: " ++ (replicate xs 'X') ++ (replicate os 'O')
+        playLoop secret (attempts - 1)
 
 xes :: [Int] -> [Int] -> Int
 xes secret guess = length $ filter (uncurry (==)) $ zip secret guess
 
+-- got many possible solutions for this...
+-- xes secret guess = length [a | (a, b) <- zip secret guess, a == b]
+
 oes :: [Int] -> [Int] -> Int
 oes secret guess =
-  let os = length $ filter (flip any secret . (==)) guess
-      xs = xes secret guess
-   in os - xs
+  length (intersect secret guess) - (xes secret guess)
