@@ -11,4 +11,4 @@
     (let [code (generate-code)]
       (println code)
       (is (= 4 (count code)))
-      (is (every? (fn [c] (= 1 (count (filter (partial == c) code)))) code)))))
+      (is (= (dedupe (sort code)) (sort code))))))
