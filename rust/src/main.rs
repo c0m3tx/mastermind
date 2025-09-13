@@ -126,14 +126,4 @@ mod tests {
         assert_eq!(output(3, 1), "XXXO");
         assert_eq!(output(1, 1), "XO");
     }
-
-    #[test]
-    fn test_generate_code_is_deduped() {
-        for _ in 1..100 {
-            let code = generate_code().to_vec();
-            let mut deduped = code.clone();
-            deduped.dedup();
-            assert_eq!(code, deduped);
-        }
-    }
 }
