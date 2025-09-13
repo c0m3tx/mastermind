@@ -129,9 +129,11 @@ mod tests {
 
     #[test]
     fn test_generate_code_is_deduped() {
-        let code = generate_code().to_vec();
-        let mut deduped = code.clone();
-        deduped.dedup();
-        assert_eq!(code, deduped);
+        for _ in 1..100 {
+            let code = generate_code().to_vec();
+            let mut deduped = code.clone();
+            deduped.dedup();
+            assert_eq!(code, deduped);
+        }
     }
 }
