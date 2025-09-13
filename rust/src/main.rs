@@ -37,8 +37,12 @@ fn generate_code() -> Code {
     let mut rng = rand::rng();
     let mut numbers: Vec<u8> = (0..10u8).collect();
     numbers.shuffle(&mut rng);
-    let code: Vec<u8> = numbers.into_iter().take(4).collect();
-    code.try_into().unwrap()
+    numbers
+        .into_iter()
+        .take(4)
+        .collect::<Vec<u8>>()
+        .try_into()
+        .unwrap()
 }
 
 fn user_input<R: io::BufRead>(mut reader: R) -> Result<Code, &'static str> {
