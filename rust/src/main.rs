@@ -53,7 +53,7 @@ fn user_input<R: io::BufRead>(mut reader: R) -> Result<Code, &'static str> {
 
     let mut numbers: Vec<u8> = line
         .chars()
-        .filter(|&c| c >= '0' && c <= '9')
+        .filter(|c| ('0'..='9').contains(c))
         .map(|c| (c as u8) - 48)
         .collect();
 
