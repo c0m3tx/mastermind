@@ -1,5 +1,13 @@
 const std = @import("std");
-const parseInt = std.fmt.parseInt;
+const Allocator = std.mem.Allocator;
+const Reader = std.io.Reader;
+
+fn getInput(gpa: Allocator, reader: anytype) ![4]u4 {
+    const input = try reader.readUntilDelimiterAlloc(gpa, '\n', 256);
+    defer gpa.free(input);
+
+    return parseInput(input);
+}
 
 fn parseInput(input: []const u8) ![4]u4 {
     var i: usize = 0;
@@ -33,6 +41,17 @@ fn formatOutput(x: u8, o: u8) []u8 {
         i += 1;
     }
     return output[0 .. x + o];
+}
+
+test "get input" {
+    const gpa = std.testing.allocator;
+    const content = "1234\n";
+    var buffer: [5]u8 = undefined; // Create a mutable fixed-size array
+    std.mem.copyForwards(u8, &buffer, content);
+    var fbs = std.io.FixedBufferStream([]u8){ .buffer = buffer[0..], .pos = 0 };
+    const reader = fbs.reader();
+    const input = try getInput(gpa, reader);
+    try std.testing.expectEqual(input, [_]u4{ 1, 2, 3, 4 });
 }
 
 test "parse input" {
